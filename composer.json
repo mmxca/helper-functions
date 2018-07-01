@@ -1,0 +1,13 @@
+{
+    "name": "mmxca/helper-functions",
+    "type": "library",
+    "description": "Provides some simple functions that are used all the time, but were not included in the PHP software.",
+    "require": {
+        "php": "^7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "HelperFunctions\\": "src/"
+        }
+    }
+}
