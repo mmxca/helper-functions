@@ -25,4 +25,4 @@ class HelperFunctions
             str_replace(' ', $joiner, str_replace('  ', ' ', str_replace(',', '', str_replace('.', '', str_replace('&', '', ucwords(strtolower(str_replace('_', ' ', $string))))))))
         );
     }
-}
+}c
