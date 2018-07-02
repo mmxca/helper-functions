@@ -59,6 +59,19 @@ class HelperFunctions
         return HelperFunctions::format_money('%.2n', $discounted_price);
     }
 
+    public static function formatDiscount($discount, $discount_type)
+    {
+        $formatted_discount = '';
+
+        if ('%' == $discount_type) {
+            $formatted_discount = ($discount + 0).'%';
+        } else {
+            $formatted_discount = '$'.$discount;
+        }
+
+        return $formatted_discount;
+    }
+
     public static function format_money($format, $number)
     {
         if (function_exists('money_format')) {
