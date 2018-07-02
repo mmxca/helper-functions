@@ -40,4 +40,115 @@ class HelperFunctions
 
         return $outArray;
     }
+
+    public static function calculateDiscountPrice($retailPrice, $discount, $discount_type)
+    {
+        $discounted_price = 0;
+
+        if ('%' == $promo_type) {
+            $discounted_price = $offer_price * ((100 - $promo_amount) / 100);
+        } else {
+            $discounted_price = $offer_price - $promo_amount;
+        }
+
+        return HelperFunctions::format_money('%.2n', $discounted_price);
+    }
+
+    public static function format_money($format, $number)
+    {
+        if (function_exists('money_format')) {
+            return money_format($format, $number);
+        } else {
+            $regex = '/%((?:[\^!\-]|\+|\(|\=.)*)([0-9]+)?'.
+                '(?:#([0-9]+))?(?:\.([0-9]+))?([in%])/';
+            if ('C' == setlocale(LC_MONETARY, 0)) {
+                setlocale(LC_MONETARY, '');
+            }
+            $locale = localeconv();
+            preg_match_all($regex, $format, $matches, PREG_SET_ORDER);
+            foreach ($matches as $fmatch) {
+                $value = floatval($number);
+                $flags = array(
+                    'fillchar' => preg_match('/\=(.)/', $fmatch[1], $match) ?
+                        $match[1] : ' ',
+                    'nogroup' => preg_match('/\^/', $fmatch[1]) > 0,
+                    'usesignal' => preg_match('/\+|\(/', $fmatch[1], $match) ?
+                        $match[0] : '+',
+                    'nosimbol' => preg_match('/\!/', $fmatch[1]) > 0,
+                    'isleft' => preg_match('/\-/', $fmatch[1]) > 0,
+                );
+                $width = trim($fmatch[2]) ? (int) $fmatch[2] : 0;
+                $left = trim($fmatch[3]) ? (int) $fmatch[3] : 0;
+                $right = trim($fmatch[4]) ? (int) $fmatch[4] : $locale['int_frac_digits'];
+                $conversion = $fmatch[5];
+
+                $positive = true;
+                if ($value < 0) {
+                    $positive = false;
+                    $value *= -1;
+                }
+                $letter = $positive ? 'p' : 'n';
+
+                $prefix = $suffix = $cprefix = $csuffix = $signal = '';
+
+                $signal = $positive ? $locale['positive_sign'] : $locale['negative_sign'];
+                switch (true) {
+                    case 1 == $locale["{$letter}_sign_posn"] && '+' == $flags['usesignal']:
+                        $prefix = $signal;
+                        break;
+                    case 2 == $locale["{$letter}_sign_posn"] && '+' == $flags['usesignal']:
+                        $suffix = $signal;
+                        break;
+                    case 3 == $locale["{$letter}_sign_posn"] && '+' == $flags['usesignal']:
+                        $cprefix = $signal;
+                        break;
+                    case 4 == $locale["{$letter}_sign_posn"] && '+' == $flags['usesignal']:
+                        $csuffix = $signal;
+                        break;
+                    case '(' == $flags['usesignal']:
+                    case 0 == $locale["{$letter}_sign_posn"]:
+                        $prefix = '(';
+                        $suffix = ')';
+                        break;
+                }
+                if (!$flags['nosimbol']) {
+                    $currency = $cprefix.
+                        ('i' == $conversion ? $locale['int_curr_symbol'] : $locale['currency_symbol']).
+                        $csuffix;
+                } else {
+                    $currency = '';
+                }
+                $space = $locale["{$letter}_sep_by_space"] ? ' ' : '';
+
+                $value = number_format(
+                    $value,
+
+                    $right,
+
+                    $locale['mon_decimal_point'],
+                    $flags['nogroup'] ? '' : $locale['mon_thousands_sep']
+                );
+                $value = @explode($locale['mon_decimal_point'], $value);
+
+                $n = strlen($prefix) + strlen($currency) + strlen($value[0]);
+                if ($left > 0 && $left > $n) {
+                    $value[0] = str_repeat($flags['fillchar'], $left - $n).$value[0];
+                }
+                $value = implode($locale['mon_decimal_point'], $value);
+                if ($locale["{$letter}_cs_precedes"]) {
+                    $value = $prefix.$currency.$space.$value.$suffix;
+                } else {
+                    $value = $prefix.$value.$space.$currency.$suffix;
+                }
+                if ($width > 0) {
+                    $value = str_pad($value, $width, $flags['fillchar'], $flags['isleft'] ?
+                        STR_PAD_RIGHT : STR_PAD_LEFT);
+                }
+
+                $format = str_replace($fmatch[0], $value, $format);
+            }
+
+            return $format;
+        }
+    }
 }
