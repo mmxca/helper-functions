@@ -26,6 +26,11 @@ class HelperFunctions
         );
     }
 
+    /**
+     * Turns a multiword string into a single word hashtag.
+     *
+     * @param string $string The String you want to hashtagify
+     */
     public static function hashtagify($string)
     {
         return '#'.str_replace(' ', '', str_replace(',', '', str_replace('.', '', str_replace('&', '', ucwords(strtolower(str_replace('_', ' ', $string)))))));
