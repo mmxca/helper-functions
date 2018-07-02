@@ -25,4 +25,19 @@ class HelperFunctions
             str_replace(' ', $joiner, str_replace('  ', ' ', str_replace(',', '', str_replace('.', '', str_replace('&', '', ucwords(strtolower(str_replace('_', ' ', $string))))))))
         );
     }
+
+    public static function hashtagify($string)
+    {
+        return '#'.str_replace(' ', '', str_replace(',', '', str_replace('.', '', str_replace('&', '', ucwords(strtolower(str_replace('_', ' ', $string)))))));
+    }
+
+    public static function buildHashtagArray($array_in)
+    {
+        $outArray = [];
+        foreach ($array_in as $string) {
+            $outArray[] = HelperFunctions::hashtagify($string);
+        }
+
+        return $outArray;
+    }
 }
