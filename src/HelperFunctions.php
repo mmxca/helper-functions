@@ -45,10 +45,10 @@ class HelperFunctions
     {
         $discounted_price = 0;
 
-        if ('%' == $promo_type) {
-            $discounted_price = $offer_price * ((100 - $promo_amount) / 100);
+        if ('%' == $discount_type) {
+            $discounted_price = $retailPrice * ((100 - $discount) / 100);
         } else {
-            $discounted_price = $offer_price - $promo_amount;
+            $discounted_price = $retailPrice - $discount;
         }
 
         return HelperFunctions::format_money('%.2n', $discounted_price);

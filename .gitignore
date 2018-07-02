@@ -3,3 +3,4 @@ wordpress/
 cache/
 .idea/
 composer.lock
+checkin.sh
