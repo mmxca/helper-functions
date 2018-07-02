@@ -43,7 +43,9 @@ class HelperFunctions
             $outArray[] = HelperFunctions::hashtagify($string);
         }
 
-        return $outArray;
+        $outArray = array_unique($outArray);
+
+        return implode(' ', $outArray);
     }
 
     public static function calculateDiscountPrice($retailPrice, $discount, $discount_type)
