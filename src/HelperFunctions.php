@@ -40,10 +40,13 @@ class HelperFunctions
     {
         $outArray = [];
         foreach ($array_in as $string) {
-            $outArray[] = HelperFunctions::hashtagify($string);
+            if ('' != trim($string)) {
+                $outArray[] = HelperFunctions::hashtagify($string);
+            }
         }
 
         $outArray = array_unique($outArray);
+        sort($outArray);
 
         return implode(' ', $outArray);
     }
