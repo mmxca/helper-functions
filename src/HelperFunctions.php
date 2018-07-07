@@ -77,8 +77,28 @@ class HelperFunctions
         return $formatted_discount;
     }
 
+    public static function sentence_case($str)
+    {
+        $cap = true;
+        $ret = '';
+        for ($x = 0; $x < strlen($str); ++$x) {
+            $letter = substr($str, $x, 1);
+            if ('.' == $letter || '!' == $letter || '?' == $letter) {
+                $cap = true;
+            } elseif (' ' != $letter && true == $cap) {
+                $letter = strtoupper($letter);
+                $cap = false;
+            }
+            $ret .= $letter;
+        }
+
+        return $ret;
+    }
+
     public static function format_money($format, $number)
     {
+        setlocale(LC_MONETARY, 'en_US.UTF-8');
+
         if (function_exists('money_format')) {
             return money_format($format, $number);
         } else {
